@@ -4,7 +4,8 @@ import InputBox from 'components/inputBox';
 
 function App() {
   return (
-    <InputBox title={'아이디'}
+    <InputBox
+      title={'아이디'}
       placeholder={'아이디 입력'}
       type={'text'}
       value={''}
