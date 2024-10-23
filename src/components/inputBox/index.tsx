@@ -6,8 +6,9 @@ interface Props {
     placeholder: string;
     type: 'text' | 'password';
     value: string;
-    isErrorMessage: boolean;
+    isErrorMessage?: boolean;
     buttonTitle?: string;
+    message?: string;
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onKeydown?: (event: KeyboardEvent<HTMLInputElement>) => void;
     onButtonClick?: () => void;
@@ -15,7 +16,7 @@ interface Props {
 
 const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
     const {
-        title, placeholder, type, value, isErrorMessage, buttonTitle, onChange, onKeydown, onButtonClick
+        title, placeholder, type, value, isErrorMessage, buttonTitle, message, onChange, onKeydown, onButtonClick
     } = props;
 
     const buttonClass = value === '' ? 'input-box-button-disable' : 'input-box-button';
@@ -26,15 +27,15 @@ const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
             <div className="input-box-title">{title}</div>
             <div className="input-box-content">
                 <div className="input-box-body">
-                    <input ref={ref} className="input-box-input"
-                        placeholder={placeholder}
-                        type={type}
-                        value={value}
-                        onChange={onChange}
-                        onKeyDown={onKeydown} />
-                    <div className="input-box-button">{'중복확인'}</div>
+                    <input ref={ref} className="input-box-input" placeholder={placeholder} type={type} value={value}
+                        onChange={onChange} onKeyDown={onKeydown} />
+                    {buttonTitle !== undefined && onButtonClick !== undefined &&
+                        <div className={buttonClass} onClick={onButtonClick}>
+                            {buttonTitle}
+                        </div>
+                    }
                 </div>
-                <div className="input-box-message">{'사용가능아이디'}</div>
+                {message !== undefined && <div className={messageClass}>{message}</div>}
             </div>
         </div>
     );
