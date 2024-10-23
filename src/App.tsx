@@ -33,11 +33,23 @@ function App2() {
 }
 
 function App() {
+  const clickNaverSignIn = () => {
+    alert('Click Naver!')
+  }
+
+  const clickKakaoSignIn = () => {
+    alert('Click Kakao!')
+  }
+
   return (
     <div className='flex-disp'>
       <div className='primary-button-lg full-width'>회원가입</div>
       <div className='disable-button-lg full-width'>회원가입2</div>
       <div className='text-link-lg full-width'>회원가입3</div>
+      <div className='sns-button-box'>
+        <div className='kakao-sign-in-button' onClick={clickKakaoSignIn}></div>
+        <div className='naver-sign-in-button' onClick={clickNaverSignIn}></div>
+      </div>
     </div>
   )
 }

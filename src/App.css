@@ -71,3 +71,32 @@
   flex-direction: column;
   gap: 10px;
 }
+
+.kakao-sign-in-button {
+  width: 56px;
+  height: 56px;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+  background-image: url(assets/images/kakao.jpg);
+
+  cursor: pointer;
+}
+
+.naver-sign-in-button {
+  width: 56px;
+  height: 56px;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+  background-image: url(assets/images/naver.jpg);
+
+  cursor: pointer;
+}
+
+.sns-button-box {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+}
