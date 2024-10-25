@@ -1,0 +1,19 @@
+#sing-up-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.sign-up-image {
+    display: flex;
+    width: 830px;
+    height: 830px;
+
+    background-image: url(./assets/sign-up-image.png);
+    background-position: 50% 50%;
+    background-size: 100%;
+}
+
+.sign-up-container {
+    display: flex;
+    flex: 1;
+}
