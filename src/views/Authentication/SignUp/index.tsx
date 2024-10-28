@@ -2,8 +2,8 @@ import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
 import './style.css'
 import InputBox from 'components/inputBox'
 import { useNavigate } from 'react-router-dom';
-import { CheckCertificationNumberRequestDto, EmailCertificationRequestDto, IdCheckRequestDto } from 'apis/request/auth';
-import { checkCertificationNumberRequest, emailCertificationRequest, idCheckRequest } from 'apis';
+import { CheckCertificationNumberRequestDto, EmailCertificationRequestDto, IdCheckRequestDto, SignUpRequestDto } from 'apis/request/auth';
+import { checkCertificationNumberRequest, emailCertificationRequest, idCheckRequest, signUpRequest } from 'apis';
 import { CheckCertificationNumberResponseDto, EmailCertificationResponseDto, IdCheckResponseDto } from 'apis/response/auth';
 import { ResponseCode } from 'types/enums';
 import { ResponseType } from 'types';
@@ -166,7 +166,7 @@ export default function SignUp() {
     };
 
     const onSignUpButtonClickHandler = () => {
-        alert("회원가입")
+        if (!id || !password || !email || !certificationNumber) return;
     }
 
     const onSignInButtonClickHandler = () => {
