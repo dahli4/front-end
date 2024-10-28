@@ -1,6 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
 import './style.css'
 import InputBox from 'components/inputBox'
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
     const idRef = useRef<HTMLInputElement | null>(null);
@@ -27,6 +28,7 @@ export default function SignUp() {
     const [emailMessage, setEmailMessage] = useState<string>('');
     const [certificationNumberMessage, setCertificationNumberMessage] = useState<string>('');
 
+    const navigate = useNavigate();
 
     const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
@@ -60,7 +62,6 @@ export default function SignUp() {
 
     const onIdButtonClickHandler = () => {
         alert("중복 확인")
-
     };
 
     const onEmailButtonClickHandler = () => {
@@ -71,6 +72,14 @@ export default function SignUp() {
         alert("인증 확인")
     };
 
+    const onSignUpButtonClickHandler = () => {
+        alert("회원가입")
+    }
+
+    const onSignInButtonClickHandler = () => {
+        navigate('/auth/sign-in');
+    }
+
     const onIdKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key !== 'Enter') return;
         onIdButtonClickHandler();
@@ -80,7 +89,6 @@ export default function SignUp() {
         if (event.key !== 'Enter') return;
         if (!passwordCheckRef.current) return;
         passwordCheckRef.current.focus();
-
     }
 
     const onPasswordCheckKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -139,12 +147,12 @@ export default function SignUp() {
                                 onChange={(onCertificationNumberChangeHandler)} onKeydown={onCertificationNumberKeyDownHandler} onButtonClick={onCertificationNumberButtonClickHandler} />
                         </div>
                         <div className='sign-up-content-button-box'>
-                            <div className={`${signUpButtonClass} full-width`}>{'회원가입'}</div>
-                            <div className='text-link-lg full-width'>{'로그인'}</div>
+                            <div className={`${signUpButtonClass} full-width`} onClick={onSignUpButtonClickHandler}>{'회원가입'}</div>
+                            <div className='text-link-lg full-width' onClick={onSignInButtonClickHandler}>{'로그인'}</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
