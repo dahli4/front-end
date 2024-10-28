@@ -99,15 +99,18 @@ export default function SignUp() {
         onCertificationNumberButtonClickHandler();
     }
 
+    const signUpButtonClass = id && password && passwordCheck && email && certificationNumber ?
+        'primary-button-lg' : 'disable-button-lg';
+
     return (
-        <div id='sing-up-wrapper'>
-            <div className='sign-up-image'><img src="./assets/sign-up-image.png" alt="hi" /></div>
+        <div id='sign-up-wrapper'>
+            <div className='sign-up-image'></div>
             <div className='sign-up-container'>
                 <div className='sign-up-box'>
                     <div className='sign-up-title'>우주여행</div>
                     <div className='sign-up-content-box'>
                         <div className='sign-up-content-sns-sign-in-box'>
-                            <div className='sign-up-content-sns-sign-in-title'>{'SNS 로그인'}</div>
+                            <div className='sign-up-content-sns-sign-in-title'>{'SNS 회원가입'}</div>
                             <div className='sign-up-content-sns-sign-in-button-box'>
                                 <div className='kakao-sign-in-button'></div>
                                 <div className='naver-sign-in-button'></div>
@@ -136,7 +139,7 @@ export default function SignUp() {
                                 onChange={(onCertificationNumberChangeHandler)} onKeydown={onCertificationNumberKeyDownHandler} onButtonClick={onCertificationNumberButtonClickHandler} />
                         </div>
                         <div className='sign-up-content-button-box'>
-                            <div className='disable-button-lg full-width'>{'회원가입'}</div>
+                            <div className={`${signUpButtonClass} full-width`}>{'회원가입'}</div>
                             <div className='text-link-lg full-width'>{'로그인'}</div>
                         </div>
                     </div>
