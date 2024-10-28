@@ -2,11 +2,11 @@ import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
 import './style.css'
 import InputBox from 'components/inputBox'
 import { useNavigate } from 'react-router-dom';
-import { EmailCertificationRequestDto, IdCheckRequestDto } from 'apis/request/auth';
-import { idCheckRequest } from 'apis';
-import { EmailCertificationResponseDto, IdCheckResponseDto } from 'apis/response/auth';
-import { ResponseDto } from 'apis/response';
+import { CheckCertificationNumberRequestDto, EmailCertificationRequestDto, IdCheckRequestDto } from 'apis/request/auth';
+import { checkCertificationNumberRequest, emailCertificationRequest, idCheckRequest } from 'apis';
+import { CheckCertificationNumberResponseDto, EmailCertificationResponseDto, IdCheckResponseDto } from 'apis/response/auth';
 import { ResponseCode } from 'types/enums';
+import { ResponseType } from 'types';
 
 export default function SignUp() {
     const idRef = useRef<HTMLInputElement | null>(null);
@@ -34,17 +34,21 @@ export default function SignUp() {
     const [certificationNumberMessage, setCertificationNumberMessage] = useState<string>('');
 
     const [isIdCheck, setIsIdCheck] = useState<boolean>(false);
+    const [isCertificationNumberCheck, setIsCertificationNumberCheck] = useState<boolean>(false);
 
-    const signUpButtonClass = id && isIdCheck && password && passwordCheck && email && certificationNumber ?
+    const signUpButtonClass = ((id && isIdCheck) && password && passwordCheck && email && (certificationNumber && isCertificationNumberCheck)) ?
         'primary-button-lg' : 'disable-button-lg';
+
+    const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
 
     const navigate = useNavigate();
 
-    const idCheckResponse = (responseBody: IdCheckResponseDto | ResponseDto | null) => {
+    const idCheckResponse = (responseBody: ResponseType<IdCheckResponseDto>) => {
         if (!responseBody) return;
         const { code } = responseBody;
         if (code === ResponseCode.VALIDATION_FAIL) alert('아이디를 입력하세요.');
         if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
+
         if (code === ResponseCode.DUPLICATE_ID) {
             setIsIdError(true);
             setIdMessage('이미 사용중인 아이디 입니다.');
@@ -57,8 +61,48 @@ export default function SignUp() {
         setIsIdCheck(true);
     };
 
-    const emailCertificationResponse = (response: EmailCertificationResponseDto | ResponseDto | null) => {
+    const emailCertificationResponse = (responseBody: ResponseType<EmailCertificationResponseDto>) => {
+        if (!responseBody) return;
+        const { code } = responseBody;
+        if (code === ResponseCode.VALIDATION_FAIL) alert('아이디와 이메일을 입력하세요.');
+        if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
+        if (code === ResponseCode.MAIL_FAIL) alert('이메일 전송에 실패했습니다.');
 
+        if (code === ResponseCode.DUPLICATE_ID) {
+            setIsIdError(true);
+            setIdMessage('이미 사용중인 아이디 입니다.');
+            setIsIdCheck(false);
+        }
+
+        if (code !== ResponseCode.SUCCESS) return;
+
+        setIsEmailError(false);
+        setEmailMessage('인증 번호가 전송 되었습니다.');
+    }
+
+    const checkCertificationNumberResponse = (responseBody: ResponseType<CheckCertificationNumberResponseDto>) => {
+        if (!responseBody) return;
+        const { code } = responseBody;
+        if (code === ResponseCode.VALIDATION_FAIL) alert('아이디, 이메일, 인증번호를 입력하세요.');
+        if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
+
+        if (code === ResponseCode.CERTIFICATION_FAIL) {
+            setIsCertificationNumberError(true);
+            setCertificationNumberMessage('이미 사용중인 아이디 입니다.');
+            setIsCertificationNumberCheck(false);
+        }
+
+        if (code === ResponseCode.DUPLICATE_ID) {
+            setIsIdError(true);
+            setIdMessage('이미 사용중인 아이디 입니다.');
+            setIsIdCheck(false);
+        }
+
+        if (code !== ResponseCode.SUCCESS) return;
+
+        setIsCertificationNumberError(false);
+        setCertificationNumberMessage('인증이 완료되었습니다.');
+        setIsCertificationNumberCheck(true);
     }
 
     const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -101,13 +145,24 @@ export default function SignUp() {
 
     const onEmailButtonClickHandler = () => {
         if (!id || !email) return;
+        const isEmailChecked = emailPattern.test(email);
+        if (!isEmailChecked) {
+            setIsEmailError(true);
+            setEmailMessage('이메일 형식이 아닌데요?');
+            return;
+        }
         const requestBody: EmailCertificationRequestDto = { id, email };
+        emailCertificationRequest(requestBody).then(emailCertificationResponse);
 
-        idCheckRequest(requestBody).then(emailCertificationResponse);
+        setIsEmailError(false);
+        setEmailMessage('전송중');
     };
 
     const onCertificationNumberButtonClickHandler = () => {
-        alert("인증 확인")
+        if (!id || !email || !certificationNumber) return;
+
+        const requestBody: CheckCertificationNumberRequestDto = { id, email, certificationNumber };
+        checkCertificationNumberRequest(requestBody).then(checkCertificationNumberResponse)
     };
 
     const onSignUpButtonClickHandler = () => {
