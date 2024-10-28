@@ -2,6 +2,11 @@ import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
 import './style.css'
 import InputBox from 'components/inputBox'
 import { useNavigate } from 'react-router-dom';
+import { EmailCertificationRequestDto, IdCheckRequestDto } from 'apis/request/auth';
+import { idCheckRequest } from 'apis';
+import { EmailCertificationResponseDto, IdCheckResponseDto } from 'apis/response/auth';
+import { ResponseDto } from 'apis/response';
+import { ResponseCode } from 'types/enums';
 
 export default function SignUp() {
     const idRef = useRef<HTMLInputElement | null>(null);
@@ -28,44 +33,77 @@ export default function SignUp() {
     const [emailMessage, setEmailMessage] = useState<string>('');
     const [certificationNumberMessage, setCertificationNumberMessage] = useState<string>('');
 
+    const [isIdCheck, setIsIdCheck] = useState<boolean>(false);
+
+    const signUpButtonClass = id && isIdCheck && password && passwordCheck && email && certificationNumber ?
+        'primary-button-lg' : 'disable-button-lg';
+
     const navigate = useNavigate();
+
+    const idCheckResponse = (responseBody: IdCheckResponseDto | ResponseDto | null) => {
+        if (!responseBody) return;
+        const { code } = responseBody;
+        if (code === ResponseCode.VALIDATION_FAIL) alert('아이디를 입력하세요.');
+        if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
+        if (code === ResponseCode.DUPLICATE_ID) {
+            setIsIdError(true);
+            setIdMessage('이미 사용중인 아이디 입니다.');
+            setIsIdCheck(false);
+        }
+        if (code !== ResponseCode.SUCCESS) return;
+
+        setIsIdError(false);
+        setIdMessage('사용 가능한 아이디 입니다.');
+        setIsIdCheck(true);
+    };
+
+    const emailCertificationResponse = (response: EmailCertificationResponseDto | ResponseDto | null) => {
+
+    }
 
     const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setId(value);
         setIdMessage('');
-    }
+        setIsIdCheck(false);
+    };
 
     const onPasswordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setPassword(value);
         setPasswordMessage('');
-    }
+    };
 
     const onPasswordCheckChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setPasswordCheck(value);
         setPasswordCheckMessage('');
-    }
+    };
 
     const onEmailChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setEmail(value);
         setEmailMessage('');
-    }
+    };
 
     const onCertificationNumberChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setCertificationNumber(value);
         setCertificationNumberMessage('');
-    }
+    };
 
     const onIdButtonClickHandler = () => {
-        alert("중복 확인")
+        if (!id) return;
+        const requestBody: IdCheckRequestDto = { id };
+
+        idCheckRequest(requestBody).then(idCheckResponse);
     };
 
     const onEmailButtonClickHandler = () => {
-        alert("인증번호 전송")
+        if (!id || !email) return;
+        const requestBody: EmailCertificationRequestDto = { id, email };
+
+        idCheckRequest(requestBody).then(emailCertificationResponse);
     };
 
     const onCertificationNumberButtonClickHandler = () => {
@@ -106,9 +144,6 @@ export default function SignUp() {
         if (event.key !== 'Enter') return;
         onCertificationNumberButtonClickHandler();
     }
-
-    const signUpButtonClass = id && password && passwordCheck && email && certificationNumber ?
-        'primary-button-lg' : 'disable-button-lg';
 
     return (
         <div id='sign-up-wrapper'>
