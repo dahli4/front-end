@@ -23,6 +23,13 @@ const ID_CHECK_URL = () => `${API_DOMAIN}/auth/id-check`;
 const EMAIL_CERTIFICATION_URL = () => `${API_DOMAIN}/auth/email-certification`;
 const CHECK_CERTIFICATION_NUMBER_URL = () => `${API_DOMAIN}/auth/check-certification`;
 
+export const signUpRequest = async (requestBody: SignUpRequestDto) => {
+    const result = await axios.post(SIGN_UP_URL(), requestBody)
+        .then(responseHandler<SignUpResponseDto>)
+        .catch(errorHandler)
+    return result;
+}
+
 export const idCheckRequest = async (requestBody: IdCheckRequestDto) => {
     const result = await axios.post(ID_CHECK_URL(), requestBody)
         .then(responseHandler<IdCheckResponseDto>)
@@ -40,13 +47,6 @@ export const emailCertificationRequest = async (requestBody: EmailCertificationR
 export const checkCertificationNumberRequest = async (requestBody: CheckCertificationNumberRequestDto) => {
     const result = await axios.post(CHECK_CERTIFICATION_NUMBER_URL(), requestBody)
         .then(responseHandler<CheckCertificationNumberResponseDto>)
-        .catch(errorHandler)
-    return result;
-}
-
-export const signUpRequest = async (requestBody: SignUpRequestDto) => {
-    const result = await axios.post(SIGN_UP_URL(), requestBody)
-        .then(responseHandler<SignUpResponseDto>)
         .catch(errorHandler)
     return result;
 }
