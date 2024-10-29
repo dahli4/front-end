@@ -2,13 +2,18 @@ import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
 import './style.css'
 import InputBox from 'components/inputBox'
 import { useNavigate } from 'react-router-dom';
-import { SignUpResponseDto } from 'apis/response/auth';
+import { SignInResponseDto } from 'apis/response/auth';
 import { ResponseCode } from 'types/enums';
-import { ResponseType } from 'types';
+import { ResponseBody } from 'types';
+import { SignInRequestDto } from 'apis/request/auth';
+import { signInRequest } from 'apis';
+import { useCookies } from 'react-cookie';
 
 export default function SignIn() {
     const idRef = useRef<HTMLInputElement | null>(null);
     const passwordRef = useRef<HTMLInputElement | null>(null);
+
+    const [cookie, setCookie, removeCookie] = useCookies();
 
     const [id, setId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -22,29 +27,40 @@ export default function SignIn() {
     const signUpButtonClass = ((id) && password) ?
         'primary-button-lg' : 'disable-button-lg';
 
-    const passwordPattern = /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,13}$/;
-
     const navigate = useNavigate();
 
-    const signUpResponse = (responseBody: ResponseType<SignUpResponseDto>) => {
+    const signInResponse = (responseBody: ResponseBody<SignInResponseDto>) => {
         if (!responseBody) return;
+
         const { code } = responseBody;
-        if (code === ResponseCode.VALIDATION_FAIL) alert('모든 항목을 입력하세요.');
+
+        if (code === ResponseCode.VALIDATION_FAIL) alert('아이디와 비밀번호를 입력하세요.');
+
         if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
 
-        if (code === ResponseCode.DUPLICATE_ID) {
-            setIsIdError(true);
-            setIdMessage('이미 사용중인 아이디 입니다.');
-        };
+        if (code === ResponseCode.SIGN_IN_FAIL) {
+            setIsPasswordError(true);
+            setPasswordMessage('로그인 정보가 일치하지 않습니다.');
+            return;
+        }
 
         if (code !== ResponseCode.SUCCESS) return;
-        navigate('/auth/sign-in');
+
+        const { token, expirationTime } = responseBody as SignInResponseDto;
+
+        const now = new Date().getTime();
+        const expires = new Date(now + expirationTime * 1000);
+
+        setCookie('accesccToken', token, { expires, path: '/' })
+
+        navigate('/');
     };
 
     const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setId(value);
         setIdMessage('');
+        setPasswordMessage('');
     };
 
     const onPasswordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -53,35 +69,31 @@ export default function SignIn() {
         setPasswordMessage('');
     };
 
-
     const onSignUpButtonClickHandler = () => {
         navigate('/auth/sign-up');
-
     };
 
     const onSignInButtonClickHandler = () => {
-        alert('로그인');
-        // if (!id || !password) return;
-        // const isPasswordPattern = passwordPattern.test(password);
+        if (!id || !password) {
+            alert('아이디와 비밀번호를 입력하시오.');
+            return;
+        }
 
-        // if (!isPasswordPattern) {
-        //     setIsPasswordError(true);
-        //     setPasswordMessage('영문자, 숫자를 혼용하여 8~13자리 문자를 입력하세요.');
-        //     return;
-        // };
-
-        // const requestBody: SignUpRequestDto = { id, password, email, certificationNumber };
-        // signUpRequest(requestBody).then(signUpResponse);
+        const requestBody: SignInRequestDto = { id, password };
+        signInRequest(requestBody).then(signInResponse);
     };
 
     const onIdKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key !== 'Enter') return;
+
         if (!passwordRef.current) return;
+
         passwordRef.current.focus();
     };
 
     const onPasswordKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key !== 'Enter') return;
+
         onSignInButtonClickHandler();
     };
 

@@ -6,7 +6,7 @@ import { CheckCertificationNumberRequestDto, EmailCertificationRequestDto, IdChe
 import { checkCertificationNumberRequest, emailCertificationRequest, idCheckRequest, signUpRequest } from 'apis';
 import { CheckCertificationNumberResponseDto, EmailCertificationResponseDto, IdCheckResponseDto, SignUpResponseDto } from 'apis/response/auth';
 import { ResponseCode } from 'types/enums';
-import { ResponseType } from 'types';
+import { ResponseBody } from 'types';
 
 export default function SignUp() {
     const idRef = useRef<HTMLInputElement | null>(null);
@@ -44,10 +44,12 @@ export default function SignUp() {
 
     const navigate = useNavigate();
 
-    const idCheckResponse = (responseBody: ResponseType<IdCheckResponseDto>) => {
+    const idCheckResponse = (responseBody: ResponseBody<IdCheckResponseDto>) => {
         if (!responseBody) return;
         const { code } = responseBody;
+
         if (code === ResponseCode.VALIDATION_FAIL) alert('아이디를 입력하세요.');
+
         if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
 
         if (code === ResponseCode.DUPLICATE_ID) {
@@ -62,11 +64,14 @@ export default function SignUp() {
         setIsIdCheck(true);
     };
 
-    const emailCertificationResponse = (responseBody: ResponseType<EmailCertificationResponseDto>) => {
+    const emailCertificationResponse = (responseBody: ResponseBody<EmailCertificationResponseDto>) => {
         if (!responseBody) return;
         const { code } = responseBody;
+
         if (code === ResponseCode.VALIDATION_FAIL) alert('아이디와 이메일을 입력하세요.');
+
         if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
+
         if (code === ResponseCode.MAIL_FAIL) alert('이메일 전송에 실패했습니다.');
 
         if (code === ResponseCode.DUPLICATE_ID) {
@@ -81,10 +86,12 @@ export default function SignUp() {
         setEmailMessage('인증 번호가 전송 되었습니다.');
     };
 
-    const checkCertificationNumberResponse = (responseBody: ResponseType<CheckCertificationNumberResponseDto>) => {
+    const checkCertificationNumberResponse = (responseBody: ResponseBody<CheckCertificationNumberResponseDto>) => {
         if (!responseBody) return;
         const { code } = responseBody;
+
         if (code === ResponseCode.VALIDATION_FAIL) alert('아이디, 이메일, 인증번호를 입력하세요.');
+
         if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
 
         if (code === ResponseCode.CERTIFICATION_FAIL) {
@@ -106,10 +113,12 @@ export default function SignUp() {
         setIsCertificationNumberCheck(true);
     };
 
-    const signUpResponse = (responseBody: ResponseType<SignUpResponseDto>) => {
+    const signUpResponse = (responseBody: ResponseBody<SignUpResponseDto>) => {
         if (!responseBody) return;
         const { code } = responseBody;
+
         if (code === ResponseCode.VALIDATION_FAIL) alert('모든 항목을 입력하세요.');
+
         if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
 
         if (code === ResponseCode.CERTIFICATION_FAIL) {
@@ -169,11 +178,13 @@ export default function SignUp() {
     const onEmailButtonClickHandler = () => {
         if (!id || !email) return;
         const isEmailChecked = emailPattern.test(email);
+
         if (!isEmailChecked) {
             setIsEmailError(true);
             setEmailMessage('이메일 형식이 아닌데요?');
             return;
         };
+
         const requestBody: EmailCertificationRequestDto = { id, email };
         emailCertificationRequest(requestBody).then(emailCertificationResponse);
 
@@ -227,12 +238,14 @@ export default function SignUp() {
 
     const onPasswordKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key !== 'Enter') return;
+
         if (!passwordCheckRef.current) return;
         passwordCheckRef.current.focus();
     };
 
     const onPasswordCheckKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key !== 'Enter') return;
+
         if (!emailRef.current) return;
         emailRef.current.focus();
     };

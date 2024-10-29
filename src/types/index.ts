@@ -1,7 +1,7 @@
 import { ResponseDto } from "apis/response";
 
-type ResponseType<T> = T | ResponseDto | null;
+type ResponseBody<T> = T | ResponseDto | null;
 
 export type {
-    ResponseType
+    ResponseBody
 }
