@@ -23,7 +23,7 @@ const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
     const messageClass = isErrorMessage ? 'input-box-message-error' : 'input-box-message';
 
     return (
-        <div className="input-box">
+        <div className="input-box full-width">
             <div className="input-box-title">{title}</div>
             <div className="input-box-content">
                 <div className="input-box-body">
