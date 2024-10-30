@@ -6,7 +6,7 @@ import { SignInResponseDto } from 'apis/response/auth';
 import { ResponseCode } from 'types/enums';
 import { ResponseBody } from 'types';
 import { SignInRequestDto } from 'apis/request/auth';
-import { signInRequest } from 'apis';
+import { signInRequest, SNS_SIGN_IN_URL } from 'apis';
 import { useCookies } from 'react-cookie';
 
 export default function SignIn() {
@@ -48,8 +48,8 @@ export default function SignIn() {
 
         const { token, expirationTime } = responseBody as SignInResponseDto;
 
-        const now = new Date().getTime();
-        const expires = new Date(now + expirationTime * 1000);
+        const now = (new Date().getTime()) * 1000;
+        const expires = new Date(now + expirationTime);
 
         setCookie('accesccToken', token, { expires, path: '/' })
 
@@ -82,6 +82,10 @@ export default function SignIn() {
         const requestBody: SignInRequestDto = { id, password };
         signInRequest(requestBody).then(signInResponse);
     };
+
+    const onSnsSignInButtonClickHandler = (type: 'kakao' | 'naver') => {
+        window.location.href = SNS_SIGN_IN_URL(type);
+    }
 
     const onIdKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key !== 'Enter') return;
@@ -121,8 +125,8 @@ export default function SignIn() {
                         <div className='sign-in-content-sns-sign-in-box'>
                             <div className='sign-in-content-sns-sign-in-title'>{'SNS 로그인'}</div>
                             <div className='sign-in-content-sns-sign-in-button-box'>
-                                <div className='kakao-sign-in-button'></div>
-                                <div className='naver-sign-in-button'></div>
+                                <div className='kakao-sign-in-button' onClick={() => onSnsSignInButtonClickHandler('kakao')} ></div>
+                                <div className='naver-sign-in-button' onClick={() => onSnsSignInButtonClickHandler('naver')}></div>
                             </div>
                         </div>
                     </div>
