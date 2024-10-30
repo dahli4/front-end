@@ -13,7 +13,7 @@ export default function OAuth() {
         const now = new Date().getTime() * 1000;
         const expires = new Date(now + Number(expirationTime));
 
-        setCookie('accesccToken', token, { expires, path: '/' })
+        setCookie('accessToken', token, { expires, path: '/' })
 
         navigate('/');
     }, [token]);
